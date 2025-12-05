@@ -15,7 +15,7 @@ template_string = """ {
 
 {
     "type": "AdaptiveCard",
-    "speak": "Host derp is DOWN",
+    "speak": "Host {{ HOSTNAME }} is {{ HOSTSTATE }}",
     "$schema": "https://adaptivecards.io/schemas/adaptive-card.json",
     "version": "1.5",
     "body": [
@@ -35,7 +35,7 @@ template_string = """ {
                                     "url": "https://avatars.githubusercontent.com/u/5666660?s=200&v=4"
                                 }
                             ],
-                            "targetWidth": "AtLeast:Narrow"
+                            "targetWidth": "AtLeast:Standard"
                         },
                         {
                             "type": "Column",
@@ -99,11 +99,13 @@ template_string = """ {
                 {
                     "type": "Action.OpenUrl",
                     "iconUrl": "icon:CheckmarkCircle",
-                    "style": "destructive"
+                    "style": "destructive",
+                    "url": "{{ ACKURL }}"
                 },
                 {
                     "type": "Action.OpenUrl",
-                    "iconUrl": "icon:Eye"
+                    "iconUrl": "icon:Eye",
+                    "url": "{{ DETAILURL }}"
                 },
                 {
                     "type": "Action.ShowCard",
@@ -137,15 +139,18 @@ template_string = """ {
                                     }
                                 ]
                             }
-                        ]
+                        ],
+                        "speak": "Details"
                     },
                     "iconUrl": "icon:ChevronDown"
                 }
             ],
-            "horizontalAlignment": "Right",
+            "horizontalAlignment": "Left",
             "targetWidth": "AtLeast:Narrow"
         }
-    ]
+    ],
+    "verticalContentAlignment": "Center",
+    "minHeight": "0px"
 }
 
 }]}"""
