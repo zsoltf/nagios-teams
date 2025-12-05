@@ -13,88 +13,139 @@ template_string = """ {
     "contentUrl":null,
     "content":
 
-    {
-        "type": "AdaptiveCard",
-        "speak": "Host {{ name }} is DOWN",
-        "$schema": "https://adaptivecards.io/schemas/adaptive-card.json",
-        "version": "1.5",
-        "body": [
-            {
-                "type": "ColumnSet",
-                "columns": [
-                    {
-                        "type": "Column",
-                        "width": "auto",
-                        "items": [
-                            {
-                                "type": "Image",
-                                "url": "https://avatars.githubusercontent.com/u/5666660?s=200&v=4",
-                                "width": "42px",
-                                "height": "42px",
-                                "altText": "Logo",
-                                "targetWidth": "AtLeast:Standard",
-                                "style": "RoundedCorners"
+{
+    "type": "AdaptiveCard",
+    "speak": "Host derp is DOWN",
+    "$schema": "https://adaptivecards.io/schemas/adaptive-card.json",
+    "version": "1.5",
+    "body": [
+        {
+            "type": "Container",
+            "items": [
+                {
+                    "type": "ColumnSet",
+                    "columns": [
+                        {
+                            "type": "Column",
+                            "width": "50px",
+                            "verticalContentAlignment": "Center",
+                            "items": [
+                                {
+                                    "type": "Image",
+                                    "url": "https://avatars.githubusercontent.com/u/5666660?s=200&v=4"
                                 }
                             ],
-                        "verticalContentAlignment": "Center"
+                            "targetWidth": "AtLeast:Narrow"
                         },
-                    {
-                        "type": "Column",
-                        "width": "stretch",
-                        "items": [
-                            {
-                                "type": "TextBlock",
-                                "text": "Host derp is DOWN",
-                                "wrap": true,
-                                "weight": "Bolder"
+                        {
+                            "type": "Column",
+                            "width": "stretch",
+                            "rtl": false,
+                            "items": [
+                                {
+                                    "type": "TextBlock",
+                                    "text": "{{ HOSTNAME }} is {{ HOSTSTATE }}",
+                                    "wrap": true,
+                                    "weight": "Bolder"
                                 },
-                            {
-                                "type": "TextBlock",
-                                "text": "Host derp",
-                                "wrap": true
-                                }
-                            ],
-                        "rtl": false
-                        },
-                    {
-                        "type": "Column",
-                        "width": "auto",
-                        "items": [
-                            {
-                                "type": "Icon",
-                                "name": "Warning",
-                                "color": "Attention",
-                                "style": "Filled",
-                                "size": "Medium",
-                                "horizontalAlignment": "Center"
+                                {
+                                    "type": "TextBlock",
+                                    "text": "{{ HOSTOUTPUT }}",
+                                    "wrap": true,
+                                    "targetWidth": "AtLeast:Narrow"
                                 }
                             ]
+                        },
+                        {
+                            "type": "Column",
+                            "width": "auto",
+                            "items": [
+                                {
+                                    "type": "Icon",
+                                    "name": "Warning",
+                                    "color": "Attention",
+                                    "style": "Filled",
+                                    "size": "Medium",
+                                    "horizontalAlignment": "Center",
+                                    "selectAction": {
+                                        "type": "Action.ToggleVisibility"
+                                    }
+                                },
+                                {
+                                    "type": "TextBlock",
+                                    "text": "{{ NOTIFICATIONTYPE }}",
+                                    "wrap": true,
+                                    "size": "Small",
+                                    "fontType": "Monospace",
+                                    "weight": "Bolder",
+                                    "color": "Dark",
+                                    "horizontalAlignment": "Center",
+                                    "maxLines": 0
+                                }
+                            ],
+                            "horizontalAlignment": "Center"
                         }
                     ],
-    "style": "attention"
-},
-{
-        "type": "ActionSet",
-        "actions": [
-            {
-                "type": "Action.OpenUrl",
-                "url": "https://adaptivecards.io/",
-                "iconUrl": "icon:CheckmarkCircle",
-                "style": "destructive"
-                },
-            {
-                "type": "Action.Submit",
-                "iconUrl": "icon:BookGlobe"
-                },
-            {
-                "type": "Action.OpenUrl",
-                "iconUrl": "icon:Eye"
+                    "style": "attention",
+                    "spacing": "None"
                 }
             ],
-        "horizontalAlignment": "Left",
-        "targetWidth": "AtLeast:Narrow"
+            "horizontalAlignment": "Center",
+            "style": "default"
+        },
+        {
+            "type": "ActionSet",
+            "actions": [
+                {
+                    "type": "Action.OpenUrl",
+                    "iconUrl": "icon:CheckmarkCircle",
+                    "style": "destructive"
+                },
+                {
+                    "type": "Action.OpenUrl",
+                    "iconUrl": "icon:Eye"
+                },
+                {
+                    "type": "Action.ShowCard",
+                    "card": {
+                        "type": "AdaptiveCard",
+                        "$schema": "https://adaptivecards.io/schemas/adaptive-card.json",
+                        "version": "1.5",
+                        "body": [
+                            {
+                                "type": "FactSet",
+                                "facts": [
+                                    {
+                                        "title": "Output",
+                                        "value": "{{ HOSTOUTPUT }}"
+                                    },
+                                    {
+                                        "title": "Duration",
+                                        "value": "{{ HOSTDURATION }}"
+                                    },
+                                    {
+                                        "title": "Notes",
+                                        "value": "{{ HOSTNOTES }}"
+                                    },
+                                    {
+                                        "title": "Alias",
+                                        "value": "{{ HOSTALIAS }}"
+                                    },
+                                    {
+                                        "title": "Type",
+                                        "value": "{{ NOTIFICATIONTYPE }}"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    "iconUrl": "icon:ChevronDown"
+                }
+            ],
+            "horizontalAlignment": "Right",
+            "targetWidth": "AtLeast:Narrow"
         }
-]
+    ]
 }
 
 }]}"""
