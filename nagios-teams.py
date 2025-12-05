@@ -11,7 +11,9 @@ template_string = """ {
 "attachments": [ {
     "contentType":"application/vnd.microsoft.card.adaptive",
     "contentUrl":null,
-    "content":{
+    "content":
+
+    {
         "type": "AdaptiveCard",
         "speak": "Host {{ name }} is DOWN",
         "$schema": "https://adaptivecards.io/schemas/adaptive-card.json",
@@ -92,8 +94,9 @@ template_string = """ {
         "horizontalAlignment": "Left",
         "targetWidth": "AtLeast:Narrow"
         }
-    ]
+]
 }
+
 }]}"""
 
 
