@@ -2,8 +2,8 @@
 
 import argparse
 import os
-import sys
-import urllib2
+import urllib.request
+import urllib.error
 from string import Template
 
 host_template_string = """ {
@@ -325,10 +325,11 @@ def load_env_file(env_path=".env"):
                 pass
 
 
-def send_teams_notification(webhook_url, alerttype, args):
+def send_teams_notification(args):
 
-    print args
-    if alerttype == 'host':
+    # print args
+
+    if args.alerttype == 'host':
 
         if args.hoststate == 'UP':
             iconname = "CheckmarkSquare"
@@ -350,7 +351,7 @@ def send_teams_notification(webhook_url, alerttype, args):
                 style=style
                 )
 
-    elif alerttype == 'service':
+    elif args.alerttype == 'service':
 
         if args.servicestate == 'OK':
             iconname = "CheckmarkSquare"
@@ -375,22 +376,18 @@ def send_teams_notification(webhook_url, alerttype, args):
                 style=style
                 )
 
-    req = urllib2.Request(webhook_url, data)
+    webhook_url = os.getenv(args.channel, '')
+    req = urllib.request.Request(webhook_url, data.encode('utf-8'))
     req.add_header('Content-Type', 'application/json')
 
     try:
-        response = urllib2.urlopen(req)
-        print "Teams Response Status:", response.getcode()
-    except urllib2.URLError as e:
-        print "Error sending request to Teams:", e.reason
+        response = urllib.request.urlopen(req)
+        print("Teams Response Status:", response.getcode())
+    except urllib.error.URLError as e:
+        print("Error sending request to Teams:", e.reason)
 
 
-def render_template(
-        templatetype,
-        args,
-        iconname,
-        style
-        ):
+def render_template(templatetype, args, iconname, style):
 
     if templatetype == 'host':
         t = Template(host_template_string)
@@ -430,8 +427,8 @@ def render_template(
 def main():
     parser = argparse.ArgumentParser(description="nagios teams notification script")
 
-    parser.add_argument('-c', '--channel', type=str, help='channel name')
-    parser.add_argument('-t', '--alerttype', type=str, default='host', help='alert type')
+    parser.add_argument('alerttype', type=str, help='alert type')
+    parser.add_argument('channel', type=str, help='channel name')
     parser.add_argument('--hostname', type=str, help='hostname')
     parser.add_argument('--hoststate', type=str, help='hoststate')
     parser.add_argument('--notificationtype', type=str, help='notificationtype')
@@ -449,9 +446,9 @@ def main():
 
     args = parser.parse_args()
 
+    #load_env_file(env_path='/usr/local/etc/teams.env')
     load_env_file(env_path='.teams.env')
-    webhook_url = os.getenv(args.channel)
-    send_teams_notification(webhook_url, args.alerttype, args)
+    send_teams_notification(args)
 
 
 if __name__ == "__main__":
