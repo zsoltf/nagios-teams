@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 
-import requests
-import json
-import sys
+import argparse
 import os
-import jinja2
+import sys
+import urllib2
+from string import Template
 
-template_string = """ {
+host_template_string = """ {
 "type": "message",
 "attachments": [ {
     "contentType":"application/vnd.microsoft.card.adaptive",
@@ -15,8 +15,8 @@ template_string = """ {
 
 {
     "type": "AdaptiveCard",
-    "speak": "Host {{ HOSTNAME }} is {{ HOSTSTATE }}",
-    "$schema": "https://adaptivecards.io/schemas/adaptive-card.json",
+    "speak": "Host $HOSTNAME is $HOSTSTATE",
+    "$$schema": "https://adaptivecards.io/schemas/adaptive-card.json",
     "version": "1.5",
     "body": [
         {
@@ -44,13 +44,13 @@ template_string = """ {
                             "items": [
                                 {
                                     "type": "TextBlock",
-                                    "text": "{{ HOSTNAME }} is {{ HOSTSTATE }}",
+                                    "text": "$HOSTNAME is $HOSTSTATE",
                                     "wrap": true,
                                     "weight": "Bolder"
                                 },
                                 {
                                     "type": "TextBlock",
-                                    "text": "{{ HOSTOUTPUT }}",
+                                    "text": "$HOSTOUTPUT",
                                     "wrap": true,
                                     "targetWidth": "AtLeast:Narrow"
                                 }
@@ -62,8 +62,8 @@ template_string = """ {
                             "items": [
                                 {
                                     "type": "Icon",
-                                    "name": "Warning",
-                                    "color": "Attention",
+                                    "name": "$iconname",
+                                    "color": "$style",
                                     "style": "Filled",
                                     "size": "Medium",
                                     "horizontalAlignment": "Center",
@@ -73,7 +73,7 @@ template_string = """ {
                                 },
                                 {
                                     "type": "TextBlock",
-                                    "text": "{{ NOTIFICATIONTYPE }}",
+                                    "text": "$NOTIFICATIONTYPE",
                                     "wrap": true,
                                     "size": "Small",
                                     "fontType": "Monospace",
@@ -83,10 +83,11 @@ template_string = """ {
                                     "maxLines": 0
                                 }
                             ],
-                            "horizontalAlignment": "Center"
+                            "horizontalAlignment": "Center",
+                            "targetWidth": "AtLeast:Narrow"
                         }
                     ],
-                    "style": "attention",
+                    "style": "$style",
                     "spacing": "None"
                 }
             ],
@@ -100,18 +101,18 @@ template_string = """ {
                     "type": "Action.OpenUrl",
                     "iconUrl": "icon:CheckmarkCircle",
                     "style": "destructive",
-                    "url": "{{ ACKURL }}"
+                    "url": "$ACKURL"
                 },
                 {
                     "type": "Action.OpenUrl",
                     "iconUrl": "icon:Eye",
-                    "url": "{{ DETAILURL }}"
+                    "url": "$DETAILURL"
                 },
                 {
                     "type": "Action.ShowCard",
                     "card": {
                         "type": "AdaptiveCard",
-                        "$schema": "https://adaptivecards.io/schemas/adaptive-card.json",
+                        "$$schema": "https://adaptivecards.io/schemas/adaptive-card.json",
                         "version": "1.5",
                         "body": [
                             {
@@ -119,23 +120,169 @@ template_string = """ {
                                 "facts": [
                                     {
                                         "title": "Output",
-                                        "value": "{{ HOSTOUTPUT }}"
+                                        "value": "$HOSTOUTPUT"
                                     },
                                     {
                                         "title": "Duration",
-                                        "value": "{{ HOSTDURATION }}"
+                                        "value": "$HOSTDURATION"
                                     },
                                     {
                                         "title": "Notes",
-                                        "value": "{{ HOSTNOTES }}"
+                                        "value": "$HOSTNOTES"
                                     },
                                     {
                                         "title": "Alias",
-                                        "value": "{{ HOSTALIAS }}"
+                                        "value": "$HOSTALIAS"
                                     },
                                     {
                                         "title": "Type",
-                                        "value": "{{ NOTIFICATIONTYPE }}"
+                                        "value": "$NOTIFICATIONTYPE"
+                                    }
+                                ]
+                            }
+                        ],
+                        "speak": "Details"
+                    },
+                    "iconUrl": "icon:ChevronDown"
+                }
+            ],
+            "horizontalAlignment": "Left",
+            "targetWidth": "AtLeast:Narrow"
+        }
+    ],
+    "verticalContentAlignment": "Center",
+    "minHeight": "0px"
+}
+
+}]}"""
+
+service_template_string = """ {
+"type": "message",
+"attachments": [ {
+    "contentType":"application/vnd.microsoft.card.adaptive",
+    "contentUrl":null,
+    "content":
+
+{
+    "type": "AdaptiveCard",
+    "speak": "Service $HOSTNAME/$SERVICEDESC is $SERVICESTATE",
+    "$$schema": "https://adaptivecards.io/schemas/adaptive-card.json",
+    "version": "1.5",
+    "body": [
+        {
+            "type": "Container",
+            "items": [
+                {
+                    "type": "ColumnSet",
+                    "columns": [
+                        {
+                            "type": "Column",
+                            "width": "50px",
+                            "verticalContentAlignment": "Center",
+                            "items": [
+                                {
+                                    "type": "Image",
+                                    "url": "https://avatars.githubusercontent.com/u/5666660?s=200&v=4"
+                                }
+                            ],
+                            "targetWidth": "AtLeast:Standard"
+                        },
+                        {
+                            "type": "Column",
+                            "width": "stretch",
+                            "rtl": false,
+                            "items": [
+                                {
+                                    "type": "TextBlock",
+                                    "text": "$HOSTNAME/$SERVICEDESC is $SERVICESTATE",
+                                    "wrap": true,
+                                    "weight": "Bolder"
+                                },
+                                {
+                                    "type": "TextBlock",
+                                    "text": "$SERVICEOUTPUT",
+                                    "wrap": true,
+                                    "targetWidth": "AtLeast:Narrow"
+                                }
+                            ]
+                        },
+                        {
+                            "type": "Column",
+                            "width": "auto",
+                            "items": [
+                                {
+                                    "type": "Icon",
+                                    "name": "$iconname",
+                                    "color": "$style",
+                                    "style": "Filled",
+                                    "size": "Medium",
+                                    "horizontalAlignment": "Center",
+                                    "selectAction": {
+                                        "type": "Action.ToggleVisibility"
+                                    }
+                                },
+                                {
+                                    "type": "TextBlock",
+                                    "text": "$NOTIFICATIONTYPE",
+                                    "wrap": true,
+                                    "size": "Small",
+                                    "fontType": "Monospace",
+                                    "weight": "Bolder",
+                                    "color": "Dark",
+                                    "horizontalAlignment": "Center",
+                                    "maxLines": 0
+                                }
+                            ],
+                            "horizontalAlignment": "Center",
+                            "targetWidth": "AtLeast:Narrow"
+                        }
+                    ],
+                    "style": "$style",
+                    "spacing": "None"
+                }
+            ],
+            "horizontalAlignment": "Center",
+            "style": "default"
+        },
+        {
+            "type": "ActionSet",
+            "actions": [
+                {
+                    "type": "Action.OpenUrl",
+                    "iconUrl": "icon:CheckmarkCircle",
+                    "style": "destructive",
+                    "url": "$ACKURL"
+                },
+                {
+                    "type": "Action.OpenUrl",
+                    "iconUrl": "icon:Eye",
+                    "url": "$DETAILURL"
+                },
+                {
+                    "type": "Action.ShowCard",
+                    "card": {
+                        "type": "AdaptiveCard",
+                        "$$schema": "https://adaptivecards.io/schemas/adaptive-card.json",
+                        "version": "1.5",
+                        "body": [
+                            {
+                                "type": "FactSet",
+                                "facts": [
+                                    {
+                                        "title": "Output",
+                                        "value": "$SERVICEOUTPUT"
+                                    },
+                                    {
+                                        "title": "Duration",
+                                        "value": "$SERVICEDURATION"
+                                    },
+                                    {
+                                        "title": "Notes",
+                                        "value": "$SERVICENOTES"
+                                    },
+                                    {
+                                        "title": "Type",
+                                        "value": "$NOTIFICATIONTYPE"
                                     }
                                 ]
                             }
@@ -156,53 +303,156 @@ template_string = """ {
 }]}"""
 
 
-def send_teams_notification(webhook_url, title, message):
-    headers = {
-            "Content-Type": "application/json"
-            }
-    payload = {
-            "type": "message",
-            "attachments": [
-                render_template("host")
-                ]
-            }
+def load_env_file(env_path=".env"):
+    """
+    Loads environment variables from a .env file into os.environ.
+    """
+    if not os.path.exists(env_path):
+        print("Warning: .env file not found at %s" % env_path)
+        return
 
-    # In Python 2, json.dumps() returns a str, which is what requests.post() expects for the 'data' argument.
-    #response = requests.post(webhook_url, headers=headers, data=json.dumps(payload))
-    response = requests.post(webhook_url, headers=headers, data=render_template(notificationtype="host"))
+    with open(env_path, 'r') as f:
+        for line in f:
+            line = line.strip()
+            if not line or line.startswith('#'):
+                continue
 
-    if response.status_code != 202:
-        # Python 2 print statement and using old-style string formatting
-        print "Failed to send notification: %s, %s" % (response.status_code, response.text)
-    else:
-        # Python 2 print statement
-        print "Notification sent successfully"
+            # Handle lines like KEY=VALUE
+            if '=' in line:
+                key, value = line.split('=', 1)
+                os.environ[key.strip()] = value.strip()
+            else:
+                pass
 
 
-def render_template(notificationtype):
+def send_teams_notification(webhook_url, alerttype, args):
 
-    # Create a Jinja2 environment
-    env = jinja2.Environment()
+    print args
+    if alerttype == 'host':
 
-    # Load a template from a string
-    template = env.from_string(template_string)
+        if args.hoststate == 'UP':
+            iconname = "CheckmarkSquare"
+            style = "Good"
+        elif args.hoststate == 'DOWN':
+            iconname = "Warning"
+            style = "Attention"
+        elif args.hoststate == 'UNREACHABLE':
+            iconname = "QuestionCircle"
+            style = "Warning"
+        else:
+            iconname = "QuestionCircle"
+            style = "Accent"
 
-    if notificationtype == "service":
-        rendered_output = template.render(name="SERVICE")
-    else:
-        rendered_output = template.render(name="HOST")
+        data = render_template(
+                templatetype=args.alerttype,
+                args=args,
+                iconname=iconname,
+                style=style
+                )
 
+    elif alerttype == 'service':
+
+        if args.servicestate == 'OK':
+            iconname = "CheckmarkSquare"
+            style = "Good"
+        elif args.servicestate == 'CRITICAL':
+            iconname = "Warning"
+            style = "Attention"
+        elif args.servicestate == 'WARNING':
+            iconname = "QuestionCircle"
+            style = "Warning"
+        elif args.servicestate == 'UNKNOWN':
+            iconname = "QuestionCircle"
+            style = "Emphasis"
+        else:
+            iconname = "QuestionCircle"
+            style = "Accent"
+
+        data = render_template(
+                templatetype=args.alerttype,
+                args=args,
+                iconname=iconname,
+                style=style
+                )
+
+    req = urllib2.Request(webhook_url, data)
+    req.add_header('Content-Type', 'application/json')
+
+    try:
+        response = urllib2.urlopen(req)
+        print "Teams Response Status:", response.getcode()
+    except urllib2.URLError as e:
+        print "Error sending request to Teams:", e.reason
+
+
+def render_template(
+        templatetype,
+        args,
+        iconname,
+        style
+        ):
+
+    if templatetype == 'host':
+        t = Template(host_template_string)
+        data = {
+                "HOSTNAME": args.hostname,
+                "HOSTSTATE": args.hoststate,
+                "NOTIFICATIONTYPE": args.notificationtype,
+                "HOSTOUTPUT": args.hostoutput,
+                "HOSTDURATION": args.hostduration,
+                "HOSTNOTES": args.hostnotes,
+                "HOSTALIAS": args.hostalias,
+                "ACKURL": args.ackurl,
+                "DETAILURL": args.detailurl,
+                "iconname": iconname,
+                "style": style
+                }
+        rendered_output = t.substitute(data)
+    elif templatetype == 'service':
+        t = Template(service_template_string)
+        data = {
+                "HOSTNAME": args.hostname,
+                "SERVICEDESC": args.servicedesc,
+                "SERVICESTATE": args.servicestate,
+                "SERVICEOUTPUT": args.serviceoutput,
+                "NOTIFICATIONTYPE": args.notificationtype,
+                "SERVICEDURATION": args.serviceduration,
+                "SERVICENOTES": args.servicenotes,
+                "ACKURL": args.ackurl,
+                "DETAILURL": args.detailurl,
+                "iconname": iconname,
+                "style": style
+                }
+        rendered_output = t.substitute(data)
     return rendered_output
 
 
+def main():
+    parser = argparse.ArgumentParser(description="nagios teams notification script")
+
+    parser.add_argument('-c', '--channel', type=str, help='channel name')
+    parser.add_argument('-t', '--alerttype', type=str, default='host', help='alert type')
+    parser.add_argument('--hostname', type=str, help='hostname')
+    parser.add_argument('--hoststate', type=str, help='hoststate')
+    parser.add_argument('--notificationtype', type=str, help='notificationtype')
+    parser.add_argument('--hostoutput', type=str, help='hostoutput')
+    parser.add_argument('--hostduration', type=str, help='hostduration')
+    parser.add_argument('--hostnotes', type=str, help='hostnotes')
+    parser.add_argument('--hostalias', type=str, help='hostalias')
+    parser.add_argument('--servicedesc', type=str, help='servicedesc')
+    parser.add_argument('--servicestate', type=str, help='servicestate')
+    parser.add_argument('--serviceoutput', type=str, help='serviceoutput')
+    parser.add_argument('--serviceduration', type=str, help='serviceduration')
+    parser.add_argument('--servicenotes', type=str, help='servicenotes')
+    parser.add_argument('--ackurl', type=str, help='ackurl')
+    parser.add_argument('--detailurl', type=str, help='detailurl')
+
+    args = parser.parse_args()
+
+    load_env_file(env_path='.teams.env')
+    webhook_url = os.getenv(args.channel)
+    send_teams_notification(webhook_url, args.alerttype, args)
+
+
 if __name__ == "__main__":
-    if len(sys.argv) != 4:
-        # Python 2 print statement
-        print "Usage: notify_teams.py <webhook_url> <title> <message>"
-        sys.exit(1)
-
-    webhook_url = 'https://defaultdbf7134bdfd84ceebeef8efc28559e.fa.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/f0e4c35569434129a35d4e4d373c1a33/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=VhyvrKsk4m4eWMlcKuOG1FfdhUmpOFcBBPoXKQboi3g'
-    title = sys.argv[1]
-    message = ' '.join(sys.argv)
-
-    send_teams_notification(webhook_url, title, message)
+    main()
