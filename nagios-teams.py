@@ -79,28 +79,6 @@ host_template_string = """ {
                                             "value": "$HOSTNOTES"
                                         }
                                     ]
-                                },
-                                {
-                                    "type": "ActionSet",
-                                    "actions": [
-                                        {
-                                            "type": "Action.OpenUrl",
-                                            "url": "https://google.com",
-                                            "iconUrl": "icon:CheckboxChecked",
-                                            "style": "destructive"
-                                        },
-                                        {
-                                            "type": "Action.OpenUrl",
-                                            "iconUrl": "icon:SpeakerOff",
-                                            "url": "https://nagios.com"
-                                        },
-                                        {
-                                            "type": "Action.OpenUrl",
-                                            "style": "positive",
-                                            "iconUrl": "icon:Eye",
-                                            "url": "https://google.com"
-                                        }
-                                    ]
                                 }
                             ],
                             "id": "hide",
@@ -218,28 +196,6 @@ service_template_string = """ {
                                         {
                                             "title": "Notes",
                                             "value": "$SERVICENOTES"
-                                        }
-                                    ]
-                                },
-                                {
-                                    "type": "ActionSet",
-                                    "actions": [
-                                        {
-                                            "type": "Action.OpenUrl",
-                                            "url": "https://google.com",
-                                            "iconUrl": "icon:CheckboxChecked",
-                                            "style": "destructive"
-                                        },
-                                        {
-                                            "type": "Action.OpenUrl",
-                                            "iconUrl": "icon:SpeakerOff",
-                                            "url": "https://nagios.com"
-                                        },
-                                        {
-                                            "type": "Action.OpenUrl",
-                                            "style": "positive",
-                                            "iconUrl": "icon:Eye",
-                                            "url": "https://google.com"
                                         }
                                     ]
                                 }
@@ -385,8 +341,6 @@ def render_template(templatetype, args, iconname, style):
                 "HOSTDURATION": args.hostduration,
                 "HOSTNOTES": args.hostnotes,
                 "HOSTALIAS": args.hostalias,
-                "ACKURL": args.ackurl,
-                "DETAILURL": args.detailurl,
                 "iconname": iconname,
                 "style": style
                 }
@@ -401,8 +355,6 @@ def render_template(templatetype, args, iconname, style):
                 "NOTIFICATIONTYPE": args.notificationtype,
                 "SERVICEDURATION": args.serviceduration,
                 "SERVICENOTES": args.servicenotes,
-                "ACKURL": args.ackurl,
-                "DETAILURL": args.detailurl,
                 "iconname": iconname,
                 "style": style
                 }
@@ -427,8 +379,6 @@ def main():
     parser.add_argument('--serviceoutput', type=str, help='serviceoutput')
     parser.add_argument('--serviceduration', type=str, help='serviceduration')
     parser.add_argument('--servicenotes', type=str, help='servicenotes')
-    parser.add_argument('--ackurl', type=str, help='ackurl')
-    parser.add_argument('--detailurl', type=str, help='detailurl')
 
     args = parser.parse_args()
 
