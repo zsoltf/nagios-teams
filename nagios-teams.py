@@ -14,144 +14,135 @@ host_template_string = """ {
     "content":
 
 {
-    "type": "AdaptiveCard",
-    "speak": "Host $HOSTNAME is $HOSTSTATE",
     "$$schema": "https://adaptivecards.io/schemas/adaptive-card.json",
+    "type": "AdaptiveCard",
     "version": "1.5",
     "body": [
         {
-            "type": "Container",
-            "items": [
+            "type": "ColumnSet",
+            "columns": [
                 {
-                    "type": "ColumnSet",
-                    "columns": [
+                    "type": "Column",
+                    "width": "50px",
+                    "items": [
                         {
-                            "type": "Column",
-                            "width": "50px",
-                            "verticalContentAlignment": "Center",
-                            "items": [
-                                {
-                                    "type": "Image",
-                                    "url": "https://avatars.githubusercontent.com/u/5666660?s=200&v=4"
-                                }
-                            ],
-                            "targetWidth": "AtLeast:Standard"
-                        },
-                        {
-                            "type": "Column",
-                            "width": "stretch",
-                            "rtl": false,
-                            "items": [
-                                {
-                                    "type": "TextBlock",
-                                    "text": "$HOSTNAME is $HOSTSTATE",
-                                    "wrap": true,
-                                    "weight": "Bolder"
-                                },
-                                {
-                                    "type": "TextBlock",
-                                    "text": "$HOSTOUTPUT",
-                                    "wrap": true,
-                                    "targetWidth": "AtLeast:Narrow"
-                                }
-                            ]
-                        },
-                        {
-                            "type": "Column",
-                            "width": "auto",
-                            "items": [
-                                {
-                                    "type": "Icon",
-                                    "name": "$iconname",
-                                    "color": "$style",
-                                    "style": "Filled",
-                                    "size": "Medium",
-                                    "horizontalAlignment": "Center",
-                                    "selectAction": {
-                                        "type": "Action.ToggleVisibility"
-                                    }
-                                },
-                                {
-                                    "type": "TextBlock",
-                                    "text": "$NOTIFICATIONTYPE",
-                                    "wrap": true,
-                                    "size": "Small",
-                                    "fontType": "Monospace",
-                                    "weight": "Bolder",
-                                    "color": "Dark",
-                                    "horizontalAlignment": "Center",
-                                    "maxLines": 0
-                                }
-                            ],
-                            "horizontalAlignment": "Center",
-                            "targetWidth": "AtLeast:Narrow"
+                            "type": "Image",
+                            "url": "https://avatars.githubusercontent.com/u/5666660?s=200&v=4",
+                            "size": "Small",
+                            "spacing": "None"
                         }
                     ],
-                    "style": "$style",
+                    "targetWidth": "AtLeast:Standard",
                     "spacing": "None"
-                }
-            ],
-            "horizontalAlignment": "Center",
-            "style": "default"
-        },
-        {
-            "type": "ActionSet",
-            "actions": [
-                {
-                    "type": "Action.OpenUrl",
-                    "iconUrl": "icon:CheckmarkCircle",
-                    "style": "destructive",
-                    "url": "$ACKURL"
                 },
                 {
-                    "type": "Action.OpenUrl",
-                    "iconUrl": "icon:Eye",
-                    "url": "$DETAILURL"
+                    "type": "Column",
+                    "width": "stretch",
+                    "spacing": "None",
+                    "verticalContentAlignment": "Center",
+                    "items": [
+                        {
+                            "type": "TextBlock",
+                            "text": "**$HOSTNAME** is **$HOSTSTATE**",
+                            "spacing": "None",
+                            "size": "Medium",
+                            "style": "heading",
+                            "wrap": true
+                        },
+                        {
+                            "type": "TextBlock",
+                            "text": "$HOSTOUTPUT",
+                            "wrap": true,
+                            "spacing": "None",
+                            "targetWidth": "AtLeast:Narrow"
+                        },
+                        {
+                            "type": "Container",
+                            "items": [
+                                {
+                                    "type": "FactSet",
+                                    "facts": [
+                                        {
+                                            "title": "Type",
+                                            "value": "$NOTIFICATIONTYPE"
+                                        },
+                                        {
+                                            "title": "Duration",
+                                            "value": "$HOSTDURATION"
+                                        },
+                                        {
+                                            "title": "Alias",
+                                            "value": "$HOSTALIAS"
+                                        },
+                                        {
+                                            "title": "Notes",
+                                            "value": "$HOSTNOTES"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "type": "ActionSet",
+                                    "actions": [
+                                        {
+                                            "type": "Action.OpenUrl",
+                                            "url": "https://google.com",
+                                            "iconUrl": "icon:CheckboxChecked",
+                                            "style": "destructive"
+                                        },
+                                        {
+                                            "type": "Action.OpenUrl",
+                                            "iconUrl": "icon:SpeakerOff",
+                                            "url": "https://nagios.com"
+                                        },
+                                        {
+                                            "type": "Action.OpenUrl",
+                                            "style": "positive",
+                                            "iconUrl": "icon:Eye",
+                                            "url": "https://google.com"
+                                        }
+                                    ]
+                                }
+                            ],
+                            "id": "hide",
+                            "isVisible": false,
+                            "spacing": "ExtraSmall",
+                            "bleed": true
+                        }
+                    ],
+                    "bleed": true
                 },
                 {
-                    "type": "Action.ShowCard",
-                    "card": {
-                        "type": "AdaptiveCard",
-                        "$$schema": "https://adaptivecards.io/schemas/adaptive-card.json",
-                        "version": "1.5",
-                        "body": [
-                            {
-                                "type": "FactSet",
-                                "facts": [
-                                    {
-                                        "title": "Output",
-                                        "value": "$HOSTOUTPUT"
-                                    },
-                                    {
-                                        "title": "Duration",
-                                        "value": "$HOSTDURATION"
-                                    },
-                                    {
-                                        "title": "Notes",
-                                        "value": "$HOSTNOTES"
-                                    },
-                                    {
-                                        "title": "Alias",
-                                        "value": "$HOSTALIAS"
-                                    },
-                                    {
-                                        "title": "Type",
-                                        "value": "$NOTIFICATIONTYPE"
-                                    }
-                                ]
-                            }
-                        ],
-                        "speak": "Details"
-                    },
-                    "iconUrl": "icon:ChevronDown"
+                    "type": "Column",
+                    "width": "32px",
+                    "spacing": "None",
+                    "items": [
+                        {
+                            "type": "Icon",
+                            "name": "$iconname",
+                            "spacing": "None",
+                            "style": "Filled",
+                            "horizontalAlignment": "Right",
+                            "color": "$style"
+                        }
+                    ],
+                    "verticalContentAlignment": "Top",
+                    "horizontalAlignment": "Right",
+                    "rtl": false,
+                    "bleed": true
                 }
             ],
-            "horizontalAlignment": "Left",
-            "targetWidth": "AtLeast:Narrow"
+            "spacing": "None",
+            "style": "$style",
+            "bleed": true,
+            "selectAction": {
+                "type": "Action.ToggleVisibility",
+                "targetElements": [
+                    "hide"
+                ]
+            }
         }
     ],
-    "verticalContentAlignment": "Center",
-    "minHeight": "0px"
+    "speak": "$HOSTNAME is $HOSTSTATE"
 }
 
 }]}"""
@@ -164,140 +155,135 @@ service_template_string = """ {
     "content":
 
 {
-    "type": "AdaptiveCard",
-    "speak": "Service $HOSTNAME/$SERVICEDESC is $SERVICESTATE",
     "$$schema": "https://adaptivecards.io/schemas/adaptive-card.json",
+    "type": "AdaptiveCard",
     "version": "1.5",
     "body": [
         {
-            "type": "Container",
-            "items": [
+            "type": "ColumnSet",
+            "columns": [
                 {
-                    "type": "ColumnSet",
-                    "columns": [
+                    "type": "Column",
+                    "width": "50px",
+                    "items": [
                         {
-                            "type": "Column",
-                            "width": "50px",
-                            "verticalContentAlignment": "Center",
-                            "items": [
-                                {
-                                    "type": "Image",
-                                    "url": "https://avatars.githubusercontent.com/u/5666660?s=200&v=4"
-                                }
-                            ],
-                            "targetWidth": "AtLeast:Standard"
-                        },
-                        {
-                            "type": "Column",
-                            "width": "stretch",
-                            "rtl": false,
-                            "items": [
-                                {
-                                    "type": "TextBlock",
-                                    "text": "$HOSTNAME/$SERVICEDESC is $SERVICESTATE",
-                                    "wrap": true,
-                                    "weight": "Bolder"
-                                },
-                                {
-                                    "type": "TextBlock",
-                                    "text": "$SERVICEOUTPUT",
-                                    "wrap": true,
-                                    "targetWidth": "AtLeast:Narrow"
-                                }
-                            ]
-                        },
-                        {
-                            "type": "Column",
-                            "width": "auto",
-                            "items": [
-                                {
-                                    "type": "Icon",
-                                    "name": "$iconname",
-                                    "color": "$style",
-                                    "style": "Filled",
-                                    "size": "Medium",
-                                    "horizontalAlignment": "Center",
-                                    "selectAction": {
-                                        "type": "Action.ToggleVisibility"
-                                    }
-                                },
-                                {
-                                    "type": "TextBlock",
-                                    "text": "$NOTIFICATIONTYPE",
-                                    "wrap": true,
-                                    "size": "Small",
-                                    "fontType": "Monospace",
-                                    "weight": "Bolder",
-                                    "color": "Dark",
-                                    "horizontalAlignment": "Center",
-                                    "maxLines": 0
-                                }
-                            ],
-                            "horizontalAlignment": "Center",
-                            "targetWidth": "AtLeast:Narrow"
+                            "type": "Image",
+                            "url": "https://avatars.githubusercontent.com/u/5666660?s=200&v=4",
+                            "size": "Small",
+                            "spacing": "None"
                         }
                     ],
-                    "style": "$style",
+                    "targetWidth": "AtLeast:Standard",
                     "spacing": "None"
-                }
-            ],
-            "horizontalAlignment": "Center",
-            "style": "default"
-        },
-        {
-            "type": "ActionSet",
-            "actions": [
-                {
-                    "type": "Action.OpenUrl",
-                    "iconUrl": "icon:CheckmarkCircle",
-                    "style": "destructive",
-                    "url": "$ACKURL"
                 },
                 {
-                    "type": "Action.OpenUrl",
-                    "iconUrl": "icon:Eye",
-                    "url": "$DETAILURL"
+                    "type": "Column",
+                    "width": "stretch",
+                    "spacing": "None",
+                    "verticalContentAlignment": "Center",
+                    "items": [
+                        {
+                            "type": "TextBlock",
+                            "text": "**$SERVICEDESC** is **$SERVICESTATE**",
+                            "spacing": "None",
+                            "size": "Medium",
+                            "style": "heading",
+                            "wrap": true
+                        },
+                        {
+                            "type": "TextBlock",
+                            "text": "$HOSTNAME",
+                            "wrap": true,
+                            "spacing": "None",
+                            "targetWidth": "AtLeast:Narrow"
+                        },
+                        {
+                            "type": "Container",
+                            "items": [
+                                {
+                                    "type": "FactSet",
+                                    "facts": [
+                                        {
+                                            "title": "Output",
+                                            "value": "$SERVICEOUTPUT"
+                                        },
+                                        {
+                                            "title": "Type",
+                                            "value": "$NOTIFICATIONTYPE"
+                                        },
+                                        {
+                                            "title": "Duration",
+                                            "value": "$SERVICEDURATION"
+                                        },
+                                        {
+                                            "title": "Notes",
+                                            "value": "$SERVICENOTES"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "type": "ActionSet",
+                                    "actions": [
+                                        {
+                                            "type": "Action.OpenUrl",
+                                            "url": "https://google.com",
+                                            "iconUrl": "icon:CheckboxChecked",
+                                            "style": "destructive"
+                                        },
+                                        {
+                                            "type": "Action.OpenUrl",
+                                            "iconUrl": "icon:SpeakerOff",
+                                            "url": "https://nagios.com"
+                                        },
+                                        {
+                                            "type": "Action.OpenUrl",
+                                            "style": "positive",
+                                            "iconUrl": "icon:Eye",
+                                            "url": "https://google.com"
+                                        }
+                                    ]
+                                }
+                            ],
+                            "id": "hide",
+                            "isVisible": false,
+                            "spacing": "ExtraSmall",
+                            "bleed": true
+                        }
+                    ],
+                    "bleed": true
                 },
                 {
-                    "type": "Action.ShowCard",
-                    "card": {
-                        "type": "AdaptiveCard",
-                        "$$schema": "https://adaptivecards.io/schemas/adaptive-card.json",
-                        "version": "1.5",
-                        "body": [
-                            {
-                                "type": "FactSet",
-                                "facts": [
-                                    {
-                                        "title": "Output",
-                                        "value": "$SERVICEOUTPUT"
-                                    },
-                                    {
-                                        "title": "Duration",
-                                        "value": "$SERVICEDURATION"
-                                    },
-                                    {
-                                        "title": "Notes",
-                                        "value": "$SERVICENOTES"
-                                    },
-                                    {
-                                        "title": "Type",
-                                        "value": "$NOTIFICATIONTYPE"
-                                    }
-                                ]
-                            }
-                        ],
-                        "speak": "Details"
-                    },
-                    "iconUrl": "icon:ChevronDown"
+                    "type": "Column",
+                    "width": "32px",
+                    "spacing": "None",
+                    "items": [
+                        {
+                            "type": "Icon",
+                            "name": "$iconname",
+                            "spacing": "None",
+                            "style": "Filled",
+                            "horizontalAlignment": "Right",
+                            "color": "$style"
+                        }
+                    ],
+                    "verticalContentAlignment": "Top",
+                    "horizontalAlignment": "Right",
+                    "rtl": false,
+                    "bleed": true
                 }
             ],
-            "horizontalAlignment": "Left",
-            "targetWidth": "AtLeast:Narrow"
+            "spacing": "None",
+            "style": "$style",
+            "bleed": true,
+            "selectAction": {
+                "type": "Action.ToggleVisibility",
+                "targetElements": [
+                    "hide"
+                ]
+            }
         }
     ],
-    "verticalContentAlignment": "Center",
-    "minHeight": "0px"
+    "speak": "$SERVICEDESC is $SERVICESTATE"
 }
 
 }]}"""
