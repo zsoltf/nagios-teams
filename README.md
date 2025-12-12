@@ -30,7 +30,7 @@ Create a file named `.teams.env` in the same directory as the script. This file 
 **Example `.teams.env`**:
 
 ```properties
-# Format: CGANNEL_NAME=WEBHOOK_URL
+# Format: CHANNEL_NAME=WEBHOOK_URL
 OPS_TEAM=https://outlook.office.com/webhook/xxxx/IncomingWebhook/yyyy
 DEV_TEAM=https://outlook.office.com/webhook/aaaa/IncomingWebhook/bbbb
 ```
@@ -48,7 +48,7 @@ python3 nagios-teams.py <alerttype> <channel> [options]
 
 * **Positional Arguments:**
     * `alerttype`: The type of alert (`host` or `service`).
-    * `channel`: The key defined in your `.teams.env` file (e.g., `OPs_TEAM`).
+    * `channel`: The key defined in your `.teams.env` file (e.g., `OPS_TEAM`).
 
 * **Optional Arguments:**
     * `--hostname`: The name of the host.
@@ -69,7 +69,7 @@ python3 nagios-teams.py <alerttype> <channel> [options]
 You can test the script manually to ensure your webhook is working:
 
 ```bash
-python3 nagios-teams.py service OPs_TEAM \
+python3 nagios-teams.py service OPS_TEAM \
     --hostname "web-server-01" \
     --servicedesc "HTTP" \
     --servicestate "CRITICAL" \
@@ -98,7 +98,7 @@ define command {
 ```nagios
 define command {
     command_name    notify-service-by-teaus
-    # $ARG1$ is the Channel Name (e.g., OPs_TEAM)
+    # $ARG1$ is the Channel Name (e.g., OPS_TEAM)
     command_line    /usr/bin/python3 /path/to/nagios-teams/nagios-teams.py service $ARG1$ --hostname "$HOSTNAME$" --servicedesc "$SERVICEDESC$" --servicestate "$SERVICESTATE$" --notificationtype "$NOTIFICATIONTYPE$" --serviceoutput "$SERVICEOUTPUT$" --serviceduration "$SERVICEDURATION$" --servicenotes "$SERVICENOTES$"
 }
 ```
@@ -113,7 +113,7 @@ define contact {
     use                             generic-contact
     alias                           Operations Team
     
-    # Pass 'OPs_TEAM' as the channel argument
+    # Pass 'OPS_TEAM' as the channel argument
     service_notification_commands   notify-service-by-teams!OPS_TEAM
     host_notification_commands      notify-host-by-teams!OPS_TEAM
     
@@ -131,7 +131,7 @@ The message layout is defined using Python `string.Template` variables located a
 You can edit these variables directly in the script to modify the Adaptive Card JSON structure or change the visible fields.
 
 **Using the Designer:**
-You can use the [official Adaptive Card Designer](https://adaptivecards.io/designer/) to visually build your card layout.
+You can use the [official Adaptive Card Designer](https://adaptivecards.microsoft.com/designer) to visually build your card layout.
 
 **Important:**
 1. Copy the JSON output from the designer.
