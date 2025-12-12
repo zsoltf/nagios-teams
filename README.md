@@ -28,7 +28,7 @@ You need to generate a webhook URL for your Teams channel:
 
 * In Microsoft Teams, add a **Workflow** to your desired channel (search for "Post to a channel when a webhook request is received").
 * **Important:** It is recommended to **copy the template workflow**. This removes the extra message/text that Microsoft automatically adds to standard webhook notifications.
-* Make as many copies as you have channels. Each copy gets a new Webhook URL.
+* Make as many copies of the workflow as you have channels and edit the workflow to update the destination team and channel.
 * Copy the generated Webhook URL.
 
 ### 3. Configure Webhooks
