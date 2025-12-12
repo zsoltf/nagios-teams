@@ -162,18 +162,17 @@ service_template_string = """ {
                     "items": [
                         {
                             "type": "TextBlock",
-                            "text": "**$SERVICEDESC** is **$SERVICESTATE**",
+                            "text": "**$HOSTNAME**",
+                            "wrap": true,
+                            "spacing": "None",
+                        },
+                        {
+                            "type": "TextBlock",
+                            "text": "$SERVICEDESC is **$SERVICESTATE**",
                             "spacing": "None",
                             "size": "Medium",
                             "style": "heading",
                             "wrap": true
-                        },
-                        {
-                            "type": "TextBlock",
-                            "text": "$HOSTNAME",
-                            "wrap": true,
-                            "spacing": "None",
-                            "targetWidth": "AtLeast:Narrow"
                         },
                         {
                             "type": "Container",
