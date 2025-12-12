@@ -26,9 +26,9 @@ cd nagios-teams
 
 You need to generate a webhook URL for your Teams channel:
 
-1.  In Microsoft Teams, add a **Workflow** to your desired channel (search for "Post to a channel when a webhook request is received").
-2.  **Important:** It is recommended to **copy the template workflow** and edit it. This allows you to modify the card payload and remove the extra message/text that Microsoft automatically adds to standard webhook notifications.
-3.  Copy the generated Webhook URL.
+* In Microsoft Teams, add a **Workflow** to your desired channel (search for "Post to a channel when a webhook request is received").
+* **Important:** It is recommended to **copy the template workflow** and edit it. This allows you to modify the card payload and remove the extra message/text that Microsoft automatically adds to standard webhook notifications.
+* Copy the generated Webhook URL.
 
 ### 3. Configure Webhooks
 
