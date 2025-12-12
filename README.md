@@ -6,13 +6,12 @@ A lightweight, zero-dependency Python script for sending Nagios/Icinga alerts to
 
 * **Zero Dependencies:** Uses Python's standard library (`urllib`, `string.Template`), so no `pip install` is required.
 * **Rich Notifications:** Sends formatted Adaptive Cards to Teams channels with status colors and icons.
+* **Expandable Details:** Alerts are interactive—click on the card to expand it and view full output details.
 * **Channel Management:** Supports mapping different logical channel names to specific Webhook URLs via a simple configuration file.
 
 ## Screenshots
 
-"[Preview of Adaptive Cards](path/to/screenshot.png)
-
-*>Note: The cards above show a CRITICAL service alert and a HOST DOWN alert.*
+[Preview of Adaptive Cards](screenshot.png)
 
 ## Setup & Configuration
 
