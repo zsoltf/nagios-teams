@@ -22,7 +22,15 @@ git clone https://github.com/zsoltf/nagios-teams.git
 cd nagios-teams
 ```
 
-### 2. Configure Webhooks
+### 2. Create Teams Workflow
+
+You need to generate a webhook URL for your Teams channel:
+
+1.  In Microsoft Teams, add a **Workflow** to your desired channel (search for "Post to a channel when a webhook request is received").
+2.  **Important:** It is recommended to **copy the template workflow** and edit it. This allows you to modify the card payload and remove the extra message/text that Microsoft automatically adds to standard webhook notifications.
+3.  Copy the generated Webhook URL.
+
+### 3. Configure Webhooks
 
 Create a file named `.teams.env` in the same directory as the script. This file maps your logical channel names to the actual Microsoft Teams Webhook URLs.
 
