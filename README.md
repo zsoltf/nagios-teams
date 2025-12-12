@@ -8,12 +8,18 @@ A lightweight, zero-dependency Python script for sending Nagios/Icinga alerts to
 * **Rich Notifications:** Sends formatted Adaptive Cards to Teams channels with status colors and icons.
 * **Channel Management:** Supports mapping different logical channel names to specific Webhook URLs via a simple configuration file.
 
+## Screenshots
+
+"[Preview of Adaptive Cards](path/to/screenshot.png)
+
+*>Note: The cards above show a CRITICAL service alert and a HOST DOWN alert.*
+
 ## Setup & Configuration
 
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/vsoltf/nagios-teams.git
+git clone https://github.com/zsoltf/nagios-teams.git
 cd nagios-teams
 ```
 
@@ -21,13 +27,28 @@ cd nagios-teams
 
 Create a file named `.teams.env` in the same directory as the script. This file maps your logical channel names to the actual Microsoft Teams Webhook URLs.
 
-**Example `.teams.env`:**
+**Example `.teams.env`**:
 
 ```properties
-# Format: Â CGANNEL_NAME=WEBHOOK_URL
+# Format: CGANNEL_NAME=WEBHOOK_URL
 OPS_TEAM=https://outlook.office.com/webhook/xxxx/IncomingWebhook/yyyy
-DEV_TEAM=https://outlook.offiM”¹½´½İ•‰¡½½¬½………„½%¹½µ¥¹]•‰¡½½¬½‰‰‰ˆ)€((ŒŒUÍ…”((ŒŒŒ½µµ…¹1¥¹”ÉÕµ•¹ÑÌ()Q¡”ÍÉ¥ÁĞ…•ÁÑÌÑİ¼Á½Í¥Ñ¥½¹…°…ÉÕµ•¹ÑÌ€¡…±•ÉÑÑåÁ•€…¹¡…¹¹•±€¤™½±±½İ•‰ä½ÁÑ¥½¹…°™±…Ì™½È…±•ÉĞ‘•Ñ…¥±Ì¸((¨©Må¹Ñ…àè¨¨)‰…Í )ÁåÑ¡½¸Ì¹…¥½ÌµÑ•…µÌ¹Áä€ñ…±•ÉÑÑåÁ”ø€ñ¡…¹¹•°øm½ÁÑ¥½¹Ít)€((¨€¨©A½Í¥Ñ¥½¹…°ÉÕµ•¹ÑÌè¨¨(€€€€¨…±•ÉÑÑåÁ•€èQ¡”ÑåÁ”½˜…±•ÉĞ€¡host` or `service`).
-    * `channel`: The key defined in your `.teams.env` file (e.g., `OPS_TEAM`).
+DEV_TEAM=https://outlook.office.com/webhook/aaaa/IncomingWebhook/bbbb
+```
+
+## Usage
+
+### Command Line Arguments
+
+The script accepts two positional arguments (`alerttype` and `channel`) followed by optional flags for alert details.
+
+**Syntax:**
+```bash
+python3 nagios-teams.py <alerttype> <channel> [options]
+```
+
+* **Positional Arguments:**
+    * `alerttype`: The type of alert (`host` or `service`).
+    * `channel`: The key defined in your `.teams.env` file (e.g., `OPs_TEAM`).
 
 * **Optional Arguments:**
     * `--hostname`: The name of the host.
@@ -48,20 +69,19 @@ DEV_TEAM=https://outlook.offiM”¹½´½İ•‰¡½½¬½………„½%¹½µ¥¹]•‰¡½½¬½‰‰‰ˆ)€((ŒŒUÍ
 You can test the script manually to ensure your webhook is working:
 
 ```bash
-python3 nagios-teams.py service OPS_TEAM \
+python3 nagios-teams.py service OPs_TEAM \
     --hostname "web-server-01" \
     --servicedesc "HTTP" \
     --servicestate "CRITICAL" \
     --serviceoutput "Socket timeout after 10 seconds" \
     --notificationtype "PROBLEM"
-    
 ```
 
 ## Nagios Configuration
 
 Define the commands in your Nagios/Icinga configuration (e.g., `commands.cfg`).
 
-We use `$ARG1` to pass the channel name dynamically. This allows you to use the same command definition for different teams (e.g., Ops, Dev, DBAs).
+We use `$ARG1$` to pass the channel name dynamically. This allows you to use the same command definition for different teams (e.g., Ops, Dev, DBAs).
 
 ### 1. Define the Commands
 
@@ -111,9 +131,10 @@ The message layout is defined using Python `string.Template` variables located a
 You can edit these variables directly in the script to modify the Adaptive Card JSON structure or change the visible fields.
 
 **Using the Designer:**
-You can use the [official Adaptive Card Designer](https://adaptivecards.io/designer/) to visually build your card layout. 
+You can use the [official Adaptive Card Designer](https://adaptivecards.io/designer/) to visually build your card layout.
 
-**Important:** 1. Copy the JSON output from the designer.
+**Important:**
+1. Copy the JSON output from the designer.
 2. Paste it into the `content` dictionary within the `attachments` list in the Python script.
 3. **Escape the `$` symbol:** You must change `$schema` to `$$schema` in your pasted JSON. This is required because Python's `string.Template` treats `$` as a variable placeholder.
 
