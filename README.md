@@ -11,7 +11,7 @@ A lightweight, zero-dependency Python script for sending Nagios/Icinga alerts to
 
 ## Screenshots
 
-![Preview of Adaptive Cards](screenshot.png)
+![Preview of Adaptive Cards](screenshot.png | width=200)
 
 ## Setup & Configuration
 
