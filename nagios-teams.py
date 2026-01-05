@@ -272,7 +272,10 @@ def send_teams_notification(args):
 
     if args.alerttype == 'host':
 
-        if args.hoststate == 'UP':
+        if args.notificationtype == 'ACKNOWLEDGEMENT':
+            iconname = "CheckmarkSquare"
+            style = "Good"
+        elif args.hoststate == 'UP':
             iconname = "CheckmarkSquare"
             style = "Good"
         elif args.hoststate == 'DOWN':
@@ -294,7 +297,10 @@ def send_teams_notification(args):
 
     elif args.alerttype == 'service':
 
-        if args.servicestate == 'OK':
+        if args.notificationtype == 'ACKNOWLEDGEMENT':
+            iconname = "CheckmarkSquare"
+            style = "Good"
+        elif args.servicestate == 'OK':
             iconname = "CheckmarkSquare"
             style = "Good"
         elif args.servicestate == 'CRITICAL':
